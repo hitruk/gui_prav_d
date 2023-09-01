@@ -10,8 +10,8 @@ from  data import Db
 
 class App():
     p = Db()
-    sql = p.query_parent()
-    data = p.get_res(sql)
+    p.query_parent()
+    data = p.get_res()
     def __init__(self, root):
         # windows
         self.root = root
@@ -56,15 +56,15 @@ class App():
             # получаем текст по индексу
             list_index_id = self._create_dict()
             text = list_index_id[(index_el[0])][1]
-            id_parent = list_index_id[(index_el[0])][0]
             print(f'text: {text}')
+            id_parent = list_index_id[(index_el[0])][0]
+            print(f'id_parent: {id_parent}')
             # замена текста в заголовке
             self.label['text'] = text
             # очищаю окно от данных
             # self.listbox.delete(0, END)
 
-    
-
+            self.p.get_res(id_parent)
          
 
 

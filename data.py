@@ -12,6 +12,7 @@ class Db:
      def __init__(self):
          self.conn = None 
          self.cur = None
+         self.__sql = '''select version()'''
 
      def _open_conn_cur(self):
          self.conn = psycopg2.connect(**self.params)
@@ -22,34 +23,34 @@ class Db:
          self.conn.close()
          self.conn = None
          self.cur = None  
-     def query_version(self):
-         sql = ''' select version() '''
-         return sql
 
      def query_parent(self):
-         sql = '''select id, title from parent'''
-         return sql
+         self.__sql = '''select id, title from parent'''
 
      def query_child(self):
-         sql =  ''' select title from child where id_parent '''
-         return sql
- 
-     def _check_sql(self):
-         if sql in self.list_sql:
-             return sql
-         else:
-             print('Недопустимый запрос')
-                 
+         self.__sql =  ''' select title from child where id_parent = %s ''' 
 
-     def get_res(self, sql):
-         # sql = '''select*from parent'''
-         if self._check() is None:
-             return 
+     # возможно это лишнее
+     #def _check_sql(self):
+     #    if sql not in self.list_sql:
+     #        sql = None
+     #        print('Недопустимый запрос')
+     #    return sql       
+
+     def get_res(self, *args):
+         #if self._check_sql(self.__sql) is None:
+         #    return 
+         # делать обработку на ошибки: то есть должна быть одна строка, тип данных строка, только цифры и т.д. 
+         id_parent = args
+         print(id_parent)        
          try:
              cur = self._open_conn_cur()
-             cur.execute(sql)
+             if id_parent is not None:
+                 cur.execute(self.__sql, (id_parent))
+             else:
+                 cur.execute(self.__sql)
              res = cur.fetchall()
-             #print(res)
+             print(res)
              cur.close()
              return res
          except(Exception, psycopg2.DatabaseError) as error:
@@ -59,54 +60,7 @@ class Db:
                  self._close()
 
 p = Db()
-print(p.__dict__)
-sql = p.query_parent()
-print(p.get_res(sql))
-
-
-
-
-
-
-# Данный код необходимо реализовать через ООП
-# 
-def get_parent_table():
-    """ """
-    sql = ''' select id, title from parent '''
-    conn = None
-    try:
-        params = config()
-        conn = psycopg2.connect(**params)
-        cur = conn.cursor()
-        cur.execute(sql)
-        base_title = cur.fetchall()
-        #  print(base_title)
-        cur.close()
-    except(Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if conn is not None:
-            conn.close()
-    return base_title
-
-
-def get_child_table(parent_id):
-    """ """
-    sql = ''' select title from child where id_parent '''
-    conn = None
-    try:
-        params = config()
-        conn = psycopg2.connect(**params)
-        cur = conn.cursor()
-        cur.execute("select*from child where id_parent=%s", (parent_id,))
-        child_data= cur.fetchall()
-        print(child_data)
-        cur.close()
-    except(Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if conn is not None:
-            conn.close()
-    return child_data
-#get_child_table(parent_id='58')
+#print(p.__dict__)
+p.query_child()
+p.get_res('13')
 
