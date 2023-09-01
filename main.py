@@ -1,13 +1,6 @@
 from  tkinter import *
 from  data import Db
 
-#root = Tk()
-#root.title('hello world')
-#root.geometry('650x400')
-#label = Label(text = 'List magazine')
-#label.pack()
-#root.mainloop()
-
 # Пока не будем использовать наследование, обойдемся композицией.
 	
 #p = Db()
@@ -30,7 +23,7 @@ class App():
         # frame/контейнер
         self.frame = Frame()
         # Button
-        self.button = Button(self.frame, text='Next', command=None)
+        self.button = Button(self.frame, text='Next', command=self.click_next_button)
         self.button.pack()
         self.frame.pack()
         # Listbox
@@ -43,10 +36,45 @@ class App():
         self.scroll.pack(side=RIGHT, fill=Y)
         # для взаиможействия со scrollbar
         self.listbox.config(yscrollcommand=self.scroll.set)
-    def op(self):
-        print(self.data) 
+    
+    def _create_dict(self):
+        # создаем словарь {index_listbox: id_table}
+        list_index = self.listbox.get(0, END)
+        dict_f = {}
+        for i in (range(len(list_index))):
+            dict_f[i] = list_index[i]  
+        print(dict_f)
+        return dict_f
+
+    def click_next_button(self):
+        # получаем index из списка элементов
+        index_el = self.listbox.curselection()
+        if index_el == ():
+            print('Выберите пункт из списка')
+        else:    
+            print(f'index_el: {index_el}')
+            # получаем текст по индексу
+            list_index_id = self._create_dict()
+            text = list_index_id[(index_el[0])][1]
+            id_parent = list_index_id[(index_el[0])][0]
+            print(f'text: {text}')
+            # замена текста в заголовке
+            self.label['text'] = text
+            # очищаю окно от данных
+            # self.listbox.delete(0, END)
+
+    
+
+         
+
+
+
+
 
 root = Tk()
 app = App(root)
 print(app.__dict__)
+#app._create_dict()
+app.click_next_button()
+#app._get_parent_data()
 root.mainloop()
